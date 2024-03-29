@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
+    private static final String INVALID_CHOICE = "Invalid choice!";
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "sasha"; //admin@admin.com
     private static final String PASSWORD = "12345678"; //root
@@ -50,11 +51,12 @@ public class Main {
                         System.out.println("Goodbye!");
                         return;
                     }
-                    default -> System.out.println("Invalid choice!");
+                    default -> System.out.println(INVALID_CHOICE);
                 }
             }
         } catch (SQLException e) {
             System.out.println("Error connecting to database");
+            e.printStackTrace();
         }
     }
 
@@ -124,7 +126,7 @@ public class Main {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice!");
+                default -> System.out.println(INVALID_CHOICE);
             }
         }
 
@@ -223,7 +225,7 @@ public class Main {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice!");
+                default -> System.out.println(INVALID_CHOICE);
             }
         }
     }
@@ -319,7 +321,7 @@ public class Main {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice!");
+                default -> System.out.println(INVALID_CHOICE);
             }
         }
     }
@@ -450,7 +452,7 @@ public class Main {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice!");
+                default -> System.out.println(INVALID_CHOICE);
             }
         }
     }
@@ -482,15 +484,10 @@ public class Main {
     }
 
     private static Category findOrCreateCategory(Connection connection, String category_title) throws SQLException {
-        CategoryDAO categoryDAO = new CategoryDAOImpl(connection);
-
-        PreparedStatement readByTitleStatement = connection.prepareStatement("SELECT * FROM \"category\" WHERE title = ?");
-        readByTitleStatement.setObject(1, category_title);
-
-        ResultSet result = readByTitleStatement.executeQuery();
-        Category cat;
-        if (result.next()) {
-            return new Category(result.getObject("uuid", UUID.class), result.getString("title"));
+        CategoryDAOImpl categoryDAO = new CategoryDAOImpl(connection);
+        Category cat = categoryDAO.getByTitle(category_title);
+        if (cat != null) {
+            return  cat;
         } else {
             cat = new Category(UUID.randomUUID(), category_title);
             categoryDAO.create(cat);

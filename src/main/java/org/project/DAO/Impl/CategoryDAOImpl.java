@@ -17,14 +17,30 @@ public class CategoryDAOImpl implements CategoryDAO {
     private final PreparedStatement readByIdStatement;
     private final PreparedStatement updateStatement;
     private final PreparedStatement deleteStatement;
+    private final PreparedStatement getByTitleStatement;
 
     public CategoryDAOImpl(Connection connection) {
         try {
+            getByTitleStatement = connection.prepareStatement("SELECT * FROM \"category\" WHERE title = ?");
             createStatement = connection.prepareStatement("INSERT INTO \"category\" (uuid, title) VALUES (?, ?)");
             readAllStatement = connection.prepareStatement("SELECT * FROM \"category\"");
             readByIdStatement = connection.prepareStatement("SELECT * FROM \"category\" WHERE uuid = ?");
             updateStatement = connection.prepareStatement("UPDATE \"category\" SET title = ? WHERE uuid = ?");
             deleteStatement = connection.prepareStatement("DELETE FROM \"category\" WHERE uuid = ?");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Category getByTitle(String title) {
+        try {
+            getByTitleStatement.setObject(1, title);
+            ResultSet result = getByTitleStatement.executeQuery();
+            Category cat;
+            if (result.next()) {
+                return new Category(result.getObject("uuid", UUID.class), result.getString("title"));
+            }
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
