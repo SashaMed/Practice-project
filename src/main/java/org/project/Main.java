@@ -3,22 +3,26 @@ package org.project;
 import org.project.DAO.*;
 import org.project.DAO.Impl.*;
 import org.project.entity.*;
+import org.project.utils.ConfigLoader;
+
 
 import java.sql.*;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
     private static final String INVALID_CHOICE = "Invalid choice!";
-    private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
-    private static final String USER = "sasha"; //admin@admin.com
-    private static final String PASSWORD = "12345678"; //root
 
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
+        Properties prop = ConfigLoader.loadProperties();
+        String url = prop.getProperty("database.url");
+        String user = prop.getProperty("database.user");
+        String password = prop.getProperty("database.password");
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
             System.out.println("Connected to database");
 
             while (true) {
@@ -59,8 +63,6 @@ public class Main {
             e.printStackTrace();
         }
     }
-
-
 
     public static void userMenu(Connection connection) {
         UserDAO userDAO = new UserDAOImpl(connection);
@@ -483,7 +485,7 @@ public class Main {
         recipe.setDescription(description);
     }
 
-    private static Category findOrCreateCategory(Connection connection, String category_title) throws SQLException {
+    private static Category findOrCreateCategory(Connection connection, String category_title) {
         CategoryDAOImpl categoryDAO = new CategoryDAOImpl(connection);
         Category cat = categoryDAO.getByTitle(category_title);
         if (cat != null) {

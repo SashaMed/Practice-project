@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class CategoryDAOImpl implements CategoryDAO {
+
+    private final String TITLE_CONST = "title";
     private final PreparedStatement createStatement;
     private final PreparedStatement readAllStatement;
     private final PreparedStatement readByIdStatement;
@@ -36,9 +38,8 @@ public class CategoryDAOImpl implements CategoryDAO {
         try {
             getByTitleStatement.setObject(1, title);
             ResultSet result = getByTitleStatement.executeQuery();
-            Category cat;
             if (result.next()) {
-                return new Category(result.getObject("uuid", UUID.class), result.getString("title"));
+                return new Category(result.getObject("uuid", UUID.class), result.getString(TITLE_CONST));
             }
             return null;
         } catch (SQLException e) {
@@ -65,7 +66,7 @@ public class CategoryDAOImpl implements CategoryDAO {
             while (result.next()) {
                 Category category = new Category(
                         result.getObject("uuid", UUID.class),
-                        result.getString("title")
+                        result.getString(TITLE_CONST)
                 );
                 categories.add(category);
             }
@@ -83,7 +84,7 @@ public class CategoryDAOImpl implements CategoryDAO {
             if (result.next()) {
                 return new Category(
                         result.getObject("uuid", UUID.class),
-                        result.getString("title")
+                        result.getString(TITLE_CONST)
                 );
             } else {
                 return null;
