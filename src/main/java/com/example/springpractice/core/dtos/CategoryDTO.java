@@ -1,12 +1,13 @@
 package com.example.springpractice.core.dtos;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @JsonPropertyOrder({"uuid", "title"})
 public class CategoryDTO{
     @NotNull
-    //@NotBlank
+    @NotBlank
     private String title;
 
     public CategoryDTO(@NotNull String title) {
