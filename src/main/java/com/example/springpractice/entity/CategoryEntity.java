@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "categories", schema = "public")
+@Table(name = "category", schema = "public")
 public class CategoryEntity {
     @Id
     @GeneratedValue
